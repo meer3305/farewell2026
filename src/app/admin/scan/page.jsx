@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { EASE_PREMIUM, fadeUp } from '@/lib/motion'
 
 export default function ScanPage() {
   const [attendanceMsg, setAttendanceMsg] = useState('')
@@ -68,61 +67,83 @@ export default function ScanPage() {
       setAttendanceMsg(`Attendance marked: ${result.registration.name} (${result.registration.section})`)
       setMsgType('success')
       setManualInput('')
-    } catch (err) {
-      setAttendanceMsg(err.message)
+    } catch (scanError) {
+      setAttendanceMsg(scanError.message)
       setMsgType('error')
     }
   }
 
-  const handleManualSubmit = (e) => {
-    e.preventDefault()
+  const handleManualSubmit = (event) => {
+    event.preventDefault()
     if (manualInput.trim()) markAttendance(manualInput.trim())
   }
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] bg-background p-4 md:p-6">
-      <Card className="max-w-lg mx-auto">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-xl">Attendance Scanner</CardTitle>
-          <Button variant="outline" size="sm" onClick={() => router.push('/admin/dashboard')}>Dashboard</Button>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="text-center space-y-4">
-            <h3 className="font-medium">Scan QR Code</h3>
-            {!scanning ? <Button onClick={startScanner}>Start Camera Scanner</Button> : <Button variant="outline" onClick={stopScanner}>Stop Scanner</Button>}
-            <div id="qr-reader" className="mx-auto max-w-sm" />
-            {cameraError && <p className="text-red-600 dark:text-red-400 text-sm">{cameraError}</p>}
+    <div className="page-bg px-4 py-8">
+      <div className="section-shell max-w-3xl">
+        <motion.div
+          className="glass-panel p-6 sm:p-8"
+          {...fadeUp({ duration: 0.52, y: 18 })}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="premium-kicker">Attendance Scanner</p>
+              <h1 className="text-4xl mt-2">Live Entry Verification</h1>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => router.push('/admin/dashboard')}>Dashboard</Button>
           </div>
 
-          <hr className="border-t" />
-
-          <div className="space-y-4">
-            <h3 className="font-medium">Or Enter QR Data Manually</h3>
-            <form onSubmit={handleManualSubmit} className="space-y-3">
-              <div className="space-y-2">
-                <Label htmlFor="qr-input">QR Data</Label>
-                <Input id="qr-input" value={manualInput} onChange={e => setManualInput(e.target.value)} placeholder="Paste QR data" />
+          <div className="mt-7 grid gap-6 sm:grid-cols-2">
+            <div className="floating-card p-5 text-center">
+              <h2 className="text-xl">Scan QR Code</h2>
+              <p className="mt-2 text-sm text-[#b5b5b5]">Use camera for instant attendance marking.</p>
+              <div className="mt-4">
+                {!scanning ? <Button onClick={startScanner}>Start Camera Scanner</Button> : <Button variant="outline" onClick={stopScanner}>Stop Scanner</Button>}
               </div>
-              <Button type="submit" className="w-full">Mark Attendance</Button>
-            </form>
+              <div id="qr-reader" className="mx-auto mt-4 max-w-sm rounded-xl overflow-hidden" />
+              {cameraError && <p className="text-red-300 text-sm mt-3">{cameraError}</p>}
+            </div>
+
+            <div className="floating-card p-5">
+              <h2 className="text-xl">Manual Check-In</h2>
+              <p className="mt-2 text-sm text-[#b5b5b5]">Paste QR payload if camera is unavailable.</p>
+              <form onSubmit={handleManualSubmit} className="mt-4 space-y-3">
+                <div className="floating-field">
+                <input
+                  id="qr-input"
+                  value={manualInput}
+                  onChange={(event) => setManualInput(event.target.value)}
+                  placeholder=" "
+                  className="form-input"
+                />
+                  <label htmlFor="qr-input" className="floating-label">QR Data</label>
+                </div>
+                <Button type="submit" className="w-full">Mark Attendance</Button>
+              </form>
+            </div>
           </div>
 
           {attendanceMsg && (
-            <div className={`p-3 rounded-md text-sm ${msgType === 'error' ? 'bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300' : 'bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300'}`}>
+            <motion.div
+              className={`mt-5 rounded-xl px-4 py-3 text-sm ${msgType === 'error' ? 'border border-red-500/40 bg-red-500/10 text-red-200' : 'border border-[#7a263f]/40 bg-[#7a263f]/10 text-[#f0d8df]'}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.32, ease: EASE_PREMIUM }}
+            >
               {attendanceMsg}
-            </div>
+            </motion.div>
           )}
 
           {lastAttended && (
-            <div className="bg-muted p-4 rounded-lg space-y-1">
-              <p className="font-medium">Last Attendance</p>
+            <div className="floating-card mt-5 p-4 space-y-1">
+              <p className="text-lg">Last Attendance</p>
               <p className="text-sm">Name: {lastAttended.name}</p>
               <p className="text-sm">Section: {lastAttended.section}</p>
               <p className="text-sm">Email: {lastAttended.email}</p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </motion.div>
+      </div>
     </div>
   )
 }

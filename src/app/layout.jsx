@@ -1,34 +1,21 @@
-import Link from 'next/link'
 import './globals.css'
+import { Cormorant_Garamond, Inter, Space_Grotesk } from 'next/font/google'
+import { SiteShell } from '@/components/site/site-shell'
+
+const headingFont = Cormorant_Garamond({ subsets: ['latin'], variable: '--font-heading' })
+const bodyFont = Inter({ subsets: ['latin'], variable: '--font-body' })
+const numberFont = Space_Grotesk({ subsets: ['latin'], variable: '--font-number' })
 
 export const metadata = {
-  title: 'Freshers 2026',
-  description: 'Registration and Attendance System',
+  title: "EPILOGUE'26 | Official Farewell Celebration",
+  description: 'The final chapter of four unforgettable years.',
 }
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="min-h-screen antialiased">
-        <header className="sticky top-0 z-50 w-full border-b bg-white">
-          <div className="max-w-2xl mx-auto flex h-14 items-center justify-between px-4">
-            <Link href="/" className="flex items-center" aria-label="Freshers 2026 home">
-              <span className="h-3 w-3 rounded-full bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.12)]" />
-            </Link>
-            <nav className="flex items-center gap-4 text-sm">
-              <Link href="/" className="text-muted-foreground hover:text-foreground">
-                Register
-              </Link>
-              <Link href="/status" className="text-muted-foreground hover:text-foreground">
-                Status
-              </Link>
-              <Link href="/admin/login" className="text-muted-foreground hover:text-foreground">
-                Admin
-              </Link>
-            </nav>
-          </div>
-        </header>
-        <main>{children}</main>
+      <body className={`${headingFont.variable} ${bodyFont.variable} ${numberFont.variable} min-h-screen antialiased`}>
+        <SiteShell>{children}</SiteShell>
       </body>
     </html>
   )

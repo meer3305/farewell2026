@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { getSupabase } from '@/lib/supabase'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { QRCodeCanvas } from 'qrcode.react'
-import { Button } from '@/components/ui/button'
+import { getSupabase } from '@/lib/supabase'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import { motion } from 'framer-motion'
+import { EASE_PREMIUM, fadeUp } from '@/lib/motion'
 
 export default function DashboardPage() {
   const [registrations, setRegistrations] = useState([])
@@ -81,92 +81,120 @@ export default function DashboardPage() {
     router.push('/admin/login')
   }
 
-  const pending = registrations.filter(r => !r.payment_verified)
-  const verified = registrations.filter(r => r.payment_verified)
+  const pending = registrations.filter((registration) => !registration.payment_verified)
+  const verified = registrations.filter((registration) => registration.payment_verified)
 
-  if (loading) return <div className="min-h-[calc(100vh-3.5rem)] bg-background flex items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>
+  if (loading) {
+    return (
+      <div className="page-bg min-h-[70vh] grid place-items-center">
+        <p className="text-[#b5b5b5]">Loading dashboard...</p>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] bg-background p-4 md:p-6">
-      <Card className="max-w-6xl mx-auto">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-2xl">Admin Dashboard</CardTitle>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => router.push('/admin/scan')}>Scan Attendance</Button>
-            <Button variant="outline" size="sm" onClick={handleLogout}>Logout</Button>
+    <div className="page-bg px-4 py-8">
+      <div className="section-shell">
+        <motion.div
+          className="glass-panel p-5 sm:p-7"
+          {...fadeUp({ duration: 0.52, y: 18 })}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="premium-kicker">Admin Dashboard</p>
+              <h1 className="text-3xl sm:text-4xl mt-2">Registrations Control Center</h1>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => router.push('/admin/scan')}>Scan Attendance</Button>
+              <Button variant="outline" size="sm" onClick={handleLogout}>Logout</Button>
+            </div>
           </div>
-        </CardHeader>
-        <CardContent>
+
           {actionMsg.text && (
-            <div className={`p-3 rounded-md text-sm mb-4 ${actionMsg.type === 'error' ? 'bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300' : 'bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300'}`}>
+            <div className={`mt-4 rounded-xl px-4 py-3 text-sm ${actionMsg.type === 'error' ? 'border border-red-500/40 bg-red-500/10 text-red-200' : 'border border-[#7a263f]/40 bg-[#7a263f]/10 text-[#f0d8df]'}`}>
               {actionMsg.text}
             </div>
           )}
 
           {pending.length > 0 && (
-            <div className="mb-8">
-              <h3 className="font-semibold text-lg mb-3">Pending Verification ({pending.length})</h3>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead><TableHead>Section</TableHead><TableHead>Roll No</TableHead>
-                      <TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Payment SS</TableHead><TableHead>Email</TableHead><TableHead>Attendance</TableHead><TableHead>Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pending.map(r => (
-                      <TableRow key={r.id}>
-                        <TableCell className="font-medium">{r.name}</TableCell>
-                        <TableCell>{r.section}</TableCell>
-                        <TableCell>{r.roll_no}</TableCell>
-                        <TableCell>{r.email}</TableCell>
-                        <TableCell>{r.phone}</TableCell>
-                        <TableCell><a href={r.payment_screenshot_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-sm">View</a></TableCell>
-                        <TableCell>{r.email_sent ? <Badge variant="success">Sent</Badge> : <Badge variant="warning">Not Sent</Badge>}</TableCell>
-                        <TableCell><Badge variant="warning">Pending</Badge></TableCell>
-                        <TableCell><Button size="sm" onClick={() => verifyPayment(r.id, r.email, r)}>Verify Payment</Button></TableCell>
-                      </TableRow>
+            <div className="mt-7">
+              <h2 className="text-2xl">Pending Verification ({pending.length})</h2>
+              <div className="mt-3 overflow-x-auto rounded-xl border border-white/10">
+                <table className="w-full text-sm">
+                  <thead className="bg-white/6 text-[#b8bec8]">
+                    <tr>
+                      <th className="p-3 text-left">Name</th>
+                      <th className="p-3 text-left">Section</th>
+                      <th className="p-3 text-left">Roll</th>
+                      <th className="p-3 text-left">Email</th>
+                      <th className="p-3 text-left">Phone</th>
+                      <th className="p-3 text-left">Payment SS</th>
+                      <th className="p-3 text-left">Email</th>
+                      <th className="p-3 text-left">Attendance</th>
+                      <th className="p-3 text-left">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pending.map((registration) => (
+                      <motion.tr key={registration.id} className="border-t border-white/10 hover:bg-white/5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.24, ease: EASE_PREMIUM }}>
+                        <td className="p-3">{registration.name}</td>
+                        <td className="p-3">{registration.section}</td>
+                        <td className="p-3">{registration.roll_no}</td>
+                        <td className="p-3">{registration.email}</td>
+                        <td className="p-3">{registration.phone}</td>
+                        <td className="p-3">
+                          <a href={registration.payment_screenshot_url} target="_blank" rel="noopener noreferrer" className="text-[#b8bec8] hover:underline">View</a>
+                        </td>
+                        <td className="p-3">{registration.email_sent ? <Badge variant="success">Sent</Badge> : <Badge variant="warning">Not Sent</Badge>}</td>
+                        <td className="p-3"><Badge variant="warning">Pending</Badge></td>
+                        <td className="p-3"><Button size="sm" onClick={() => verifyPayment(registration.id, registration.email, registration)}>Verify Payment</Button></td>
+                      </motion.tr>
                     ))}
-                  </TableBody>
-                </Table>
+                  </tbody>
+                </table>
               </div>
             </div>
           )}
 
           {verified.length > 0 && (
-            <div>
-              <h3 className="font-semibold text-lg mb-3">Verified ({verified.length})</h3>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead><TableHead>Section</TableHead><TableHead>Roll No</TableHead>
-                      <TableHead>Email</TableHead><TableHead>Payment</TableHead><TableHead>Email</TableHead><TableHead>Attendance</TableHead><TableHead>QR</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {verified.map(r => (
-                      <TableRow key={r.id}>
-                        <TableCell className="font-medium">{r.name}</TableCell>
-                        <TableCell>{r.section}</TableCell>
-                        <TableCell>{r.roll_no}</TableCell>
-                        <TableCell>{r.email}</TableCell>
-                        <TableCell><Badge variant="success">Verified</Badge></TableCell>
-                        <TableCell>{r.email_sent ? <Badge variant="success">Sent</Badge> : <Badge variant="warning">Not Sent</Badge>}</TableCell>
-                        <TableCell>{r.attendance?.length > 0 ? <Badge variant="success">Present</Badge> : <Badge variant="warning">Not Marked</Badge>}</TableCell>
-                        <TableCell><QRCodeCanvas value={r.qr_data} size={64} /></TableCell>
-                      </TableRow>
+            <div className="mt-9">
+              <h2 className="text-2xl">Verified ({verified.length})</h2>
+              <div className="mt-3 overflow-x-auto rounded-xl border border-white/10">
+                <table className="w-full text-sm">
+                  <thead className="bg-white/6 text-[#b8bec8]">
+                    <tr>
+                      <th className="p-3 text-left">Name</th>
+                      <th className="p-3 text-left">Section</th>
+                      <th className="p-3 text-left">Roll</th>
+                      <th className="p-3 text-left">Email</th>
+                      <th className="p-3 text-left">Payment</th>
+                      <th className="p-3 text-left">Email</th>
+                      <th className="p-3 text-left">Attendance</th>
+                      <th className="p-3 text-left">QR</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {verified.map((registration) => (
+                      <motion.tr key={registration.id} className="border-t border-white/10 hover:bg-white/5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.24, ease: EASE_PREMIUM }}>
+                        <td className="p-3">{registration.name}</td>
+                        <td className="p-3">{registration.section}</td>
+                        <td className="p-3">{registration.roll_no}</td>
+                        <td className="p-3">{registration.email}</td>
+                        <td className="p-3"><Badge variant="success">Verified</Badge></td>
+                        <td className="p-3">{registration.email_sent ? <Badge variant="success">Sent</Badge> : <Badge variant="warning">Not Sent</Badge>}</td>
+                        <td className="p-3">{registration.attendance?.length > 0 ? <Badge variant="success">Present</Badge> : <Badge variant="warning">Not Marked</Badge>}</td>
+                        <td className="p-3"><div className="bg-white p-1 rounded-md inline-block"><QRCodeCanvas value={registration.qr_data} size={56} /></div></td>
+                      </motion.tr>
                     ))}
-                  </TableBody>
-                </Table>
+                  </tbody>
+                </table>
               </div>
             </div>
           )}
 
-          {registrations.length === 0 && <p className="text-muted-foreground text-center py-8">No registrations yet.</p>}
-        </CardContent>
-      </Card>
+          {registrations.length === 0 && <p className="text-[#b5b5b5] text-center py-8">No registrations yet.</p>}
+        </motion.div>
+      </div>
     </div>
   )
 }
