@@ -1,14 +1,25 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { getSupabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Separator } from '@/components/ui/separator'
+import { cn } from '@/lib/utils'
+
+const PAYMENT_QR_SRC = '/payment-qr-placeholder.svg'
+const REGISTRATION_FEE = '₹200'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_RE = /^(\+91)?[6-9]\d{9}$/
+
+const FIELDS = [
+  { name: 'name', label: 'Full Name', placeholder: 'Your answer', required: true },
+  { name: 'section', label: 'Section', placeholder: 'Your answer', required: true },
+  { name: 'roll_no', label: 'Roll Number', placeholder: 'Your answer', required: true },
+]
 
 function validateField(name, value) {
   switch (name) {
@@ -25,6 +36,20 @@ function validateField(name, value) {
     case 'roll_no': return !value ? 'Roll No is required' : ''
     default: return ''
   }
+}
+
+function FormField({ id, label, required, error, hint, children }) {
+  return (
+    <div className="space-y-2 py-4 border-b border-border last:border-0">
+      <Label htmlFor={id} className="text-sm font-normal text-foreground">
+        {label}
+        {required && <span className="text-destructive ml-0.5">*</span>}
+      </Label>
+      {children}
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
+    </div>
+  )
 }
 
 export default function RegisterPage() {
@@ -85,7 +110,7 @@ export default function RegisterPage() {
       })
       if (dbError) throw dbError
 
-      setMessage('Registration submitted! You will receive a QR code once payment is verified.')
+      setMessage('Registration submitted. You will receive a QR code once payment is verified.')
       setForm({ name: '', section: '', roll_no: '', phone: '', email: '' })
       setFieldErrors({})
       setPaymentFile(null)
@@ -98,45 +123,157 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Freshers 2026</CardTitle>
-          <CardDescription>Fill in your details and upload payment screenshot</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {message && <div className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 p-3 rounded-md text-sm mb-4">{message}</div>}
-          {error && <div className="bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 p-3 rounded-md text-sm mb-4">{error}</div>}
+    <div className="page-bg min-h-[calc(100vh-3.5rem)] py-6 px-4">
+      <div className="mx-auto w-full max-w-2xl space-y-3">
+        <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+          <div className="h-2 bg-primary" />
+          <div className="p-6 pb-4">
+            <h1 className="text-3xl font-normal text-foreground">Freshers 2026 Registration</h1>
+            <p className="text-sm text-muted-foreground mt-2">
+              Fill in your details and upload a payment screenshot to register.
+            </p>
+            <Separator className="mt-4" />
+            <p className="mt-3 text-xs text-muted-foreground">
+              <span className="text-destructive">*</span> Required
+            </p>
+          </div>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {['name', 'section', 'roll_no'].map(f => (
-              <div key={f} className="space-y-2">
-                <Label htmlFor={f}>{f.charAt(0).toUpperCase() + f.slice(1).replace('_', ' ')}</Label>
-                <Input id={f} name={f} value={form[f]} onChange={handleChange} onBlur={handleBlur} required />
-                {fieldErrors[f] && <p className="text-xs text-red-500">{fieldErrors[f]}</p>}
-              </div>
+        {message && (
+          <Alert className="alert-success">
+            <AlertDescription>{message}</AlertDescription>
+          </Alert>
+        )}
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+            <div className="h-2 bg-primary" />
+            <div className="p-6">
+              <h2 className="text-base font-medium text-foreground">Personal details</h2>
+              <Separator className="my-4" />
+
+            {FIELDS.map(({ name, label, placeholder, required }) => (
+              <FormField key={name} id={name} label={label} required={required} error={fieldErrors[name]}>
+                <input
+                  id={name}
+                  name={name}
+                  value={form[name]}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder={placeholder}
+                  required
+                  className={cn('form-input', fieldErrors[name] && 'form-input-error')}
+                />
+              </FormField>
             ))}
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
-              <Input id="phone" name="phone" type="tel" value={form.phone} onChange={handleChange} onBlur={handleBlur} required placeholder="+919XXXXXXXXX or 98XXXXXXXX" />
-              {fieldErrors.phone && <p className="text-xs text-red-500">{fieldErrors.phone}</p>}
+
+            <FormField id="phone" label="Phone number" required error={fieldErrors.phone}>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                value={form.phone}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Your answer"
+                required
+                className={cn('form-input', fieldErrors.phone && 'form-input-error')}
+              />
+            </FormField>
+
+            <FormField
+              id="email"
+              label="Email"
+              required
+              error={fieldErrors.email}
+              hint="Your entry QR code will be sent to this email."
+            >
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Your answer"
+                required
+                className={cn('form-input', fieldErrors.email && 'form-input-error')}
+              />
+            </FormField>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" value={form.email} onChange={handleChange} onBlur={handleBlur} required />
-              {fieldErrors.email && <p className="text-xs text-red-500">{fieldErrors.email}</p>}
+          </div>
+
+          <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+            <div className="h-2 bg-primary" />
+            <div className="p-6">
+            <h2 className="text-base font-medium text-foreground">Payment</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Pay {REGISTRATION_FEE} via UPI and upload your screenshot.
+            </p>
+            <Separator className="my-4" />
+
+            <div className="flex flex-col sm:flex-row gap-6">
+              <div className="shrink-0">
+                <p className="text-sm text-foreground mb-2">Scan to pay</p>
+                <div className="w-[160px] h-[160px] rounded border border-border bg-secondary overflow-hidden">
+                  <Image
+                    src={PAYMENT_QR_SRC}
+                    alt="UPI payment QR code"
+                    width={160}
+                    height={160}
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  UPI: freshers2026@upi
+                </p>
+              </div>
+
+              <div className="flex-1">
+                <FormField id="payment" label="Payment screenshot" required>
+                  {preview ? (
+                    <div className="space-y-2">
+                      <img src={preview} alt="Payment preview" className="max-h-36 rounded border border-border" />
+                      <label htmlFor="payment" className="text-sm text-primary cursor-pointer hover:underline">
+                        Change file
+                      </label>
+                    </div>
+                  ) : (
+                    <label
+                      htmlFor="payment"
+                      className="block text-sm text-muted-foreground cursor-pointer"
+                    >
+                      <span className="text-primary hover:underline">Add file</span>
+                      <span> or drag and drop</span>
+                    </label>
+                  )}
+                  <input
+                    id="payment"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFile}
+                    className="mt-2 block w-full text-sm text-muted-foreground file:mr-3 file:rounded file:border file:border-border file:bg-secondary file:px-3 file:py-1 file:text-sm file:text-foreground"
+                    required={!paymentFile}
+                  />
+                </FormField>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="payment">Upload Payment Screenshot</Label>
-              <Input id="payment" type="file" accept="image/*" onChange={handleFile} required />
-              {preview && <img src={preview} alt="Preview" className="mt-2 max-w-[200px] rounded-md border" />}
             </div>
-            <Button type="submit" disabled={loading} className="w-full">
-              {loading ? 'Submitting...' : 'Register'}
+          </div>
+
+          <div className="flex justify-end pt-1">
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Submitting...' : 'Submit'}
             </Button>
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }

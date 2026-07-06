@@ -1,13 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { getSupabase } from '@/lib/supabase'
 import { QRCodeCanvas } from 'qrcode.react'
+import { getSupabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Separator } from '@/components/ui/separator'
 
 export default function StatusPage() {
   const [email, setEmail] = useState('')
@@ -38,49 +38,82 @@ export default function StatusPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Check Status</CardTitle>
-          <CardDescription>Enter your registered email</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleCheck} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
-            </div>
-            <Button type="submit" disabled={loading} className="w-full">{loading ? 'Checking...' : 'Check Status'}</Button>
-          </form>
+    <div className="page-bg min-h-[calc(100vh-3.5rem)] py-6 px-4">
+      <div className="mx-auto w-full max-w-2xl space-y-3">
+        <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+          <div className="h-2 bg-primary" />
+          <div className="p-6">
+            <h1 className="text-3xl font-normal text-foreground">Check registration status</h1>
+            <p className="text-sm text-muted-foreground mt-2">
+              Enter the email you used during registration.
+            </p>
+            <Separator className="my-4" />
 
-          {error && <div className="bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 p-3 rounded-md text-sm mt-4">{error}</div>}
-
-          {registration && (
-            <div className="mt-6 space-y-4">
-              <h3 className="font-semibold text-lg">{registration.name}</h3>
-              <p className="text-sm text-muted-foreground">Section: {registration.section} | Roll: {registration.roll_no}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Payment</span>
-                <Badge variant={registration.payment_verified ? 'success' : 'warning'}>
-                  {registration.payment_verified ? 'Verified' : 'Pending'}
-                </Badge>
+            <form onSubmit={handleCheck} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-normal">
+                  Email <span className="text-destructive">*</span>
+                </Label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="Your answer"
+                  required
+                  className="form-input"
+                />
               </div>
-              {registration.payment_verified && registration.qr_data && (
-                <div className="text-center space-y-3 pt-2">
-                  <p className="font-medium text-sm">Your QR Code</p>
-                  <div className="inline-block p-3 bg-white rounded-lg border">
-                    <QRCodeCanvas value={registration.qr_data} size={200} />
-                  </div>
-                  <p className="text-xs text-muted-foreground">Show this at the event for attendance verification</p>
-                </div>
-              )}
-              {!registration.payment_verified && (
-                <div className="bg-muted text-muted-foreground p-3 rounded-md text-sm">Your payment is being verified. Check back later.</div>
-              )}
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Checking...' : 'Check status'}
+              </Button>
+            </form>
+          </div>
+        </div>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {registration && (
+          <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+            <div className="h-2 bg-primary" />
+            <div className="p-6 space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-medium text-foreground">{registration.name}</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Section {registration.section} · Roll {registration.roll_no}
+                </p>
+              </div>
+              <Badge variant={registration.payment_verified ? 'success' : 'warning'}>
+                {registration.payment_verified ? 'Verified' : 'Pending'}
+              </Badge>
             </div>
-          )}
-        </CardContent>
-      </Card>
+
+            <Separator />
+
+            {registration.payment_verified && registration.qr_data ? (
+              <div className="text-center space-y-3">
+                <p className="text-sm text-foreground">Your entry QR code</p>
+                <div className="inline-block p-3 rounded border border-border bg-white">
+                  <QRCodeCanvas value={registration.qr_data} size={200} />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Show this at the event for attendance.
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Your payment is being verified. Your QR code will appear here once approved.
+              </p>
+            )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

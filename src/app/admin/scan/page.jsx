@@ -18,10 +18,6 @@ export default function ScanPage() {
   const html5QrCodeRef = useRef(null)
 
   useEffect(() => {
-    if (!localStorage.getItem('admin_authenticated')) router.push('/admin/login')
-  }, [router])
-
-  useEffect(() => {
     return () => {
       if (html5QrCodeRef.current) {
         try { html5QrCodeRef.current.stop() } catch {}

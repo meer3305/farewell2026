@@ -15,10 +15,6 @@ export default function DashboardPage() {
   const [actionMsg, setActionMsg] = useState({ type: '', text: '' })
   const router = useRouter()
 
-  useEffect(() => {
-    if (!localStorage.getItem('admin_authenticated')) router.push('/admin/login')
-  }, [router])
-
   useEffect(() => { loadRegistrations() }, [])
 
   const loadRegistrations = async () => {
@@ -80,8 +76,8 @@ export default function DashboardPage() {
     loadRegistrations()
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin_authenticated')
+  const handleLogout = async () => {
+    await fetch('/api/admin/logout', { method: 'POST' })
     router.push('/admin/login')
   }
 
