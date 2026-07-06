@@ -12,9 +12,9 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen antialiased">
         <header className="sticky top-0 z-50 w-full border-b bg-white">
           <div className="max-w-2xl mx-auto flex h-14 items-center justify-between px-4">
-            {/* <Link href="/" className="text-base font-medium text-foreground">
-              Freshers 2026
-            </Link> */}
+            <Link href="/" className="flex items-center" aria-label="Freshers 2026 home">
+              <span className="h-3 w-3 rounded-full bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.12)]" />
+            </Link>
             <nav className="flex items-center gap-4 text-sm">
               <Link href="/" className="text-muted-foreground hover:text-foreground">
                 Register
