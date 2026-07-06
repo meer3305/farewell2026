@@ -18,7 +18,7 @@ export async function POST(request) {
     const emailHtml = `
       <html>
         <body style="font-family:Arial,sans-serif;padding:24px;max-width:600px;margin:0 auto;">
-          <h2>Freshers 2026 - Registration Confirmed</h2>
+          <h2>Farewell 2026 - Registration Confirmed</h2>
           <p>Hi <strong>${name}</strong>,</p>
           <p>Your payment has been verified. Here is your unique QR code:</p>
           <div style="text-align:center;margin:24px 0;">
@@ -40,9 +40,9 @@ export async function POST(request) {
         'api-key': BREVO_API_KEY,
       },
       body: JSON.stringify({
-        sender: { name: 'Freshers 2026', email: process.env.BREVO_SENDER_EMAIL || 'noreply@freshers2026.com' },
+        sender: { name: 'Farewell 2026', email: process.env.BREVO_SENDER_EMAIL || 'noreply@farewell2026.com' },
         to: [{ email, name }],
-        subject: 'Freshers 2026 - Your QR Code is Ready!',
+        subject: 'Farewell 2026 - Your QR Code is Ready!',
         htmlContent: emailHtml,
       }),
     })

@@ -13,8 +13,9 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { EASE_PREMIUM, staggerChild, staggerParent } from '@/lib/motion'
 
-const PAYMENT_QR_SRC = '/payment-qr-placeholder.svg'
-const REGISTRATION_FEE = '₹200'
+
+const PAYMENT_QR_SRC =  "/payment.png"
+const REGISTRATION_FEE = '₹1,400'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_RE = /^(\+91)?[6-9]\d{9}$/
@@ -551,9 +552,8 @@ export default function RegisterPage() {
               <div className="floating-card mt-5 p-4">
                 <p className="text-sm mb-2">Scan to pay</p>
                 <div className="w-[180px] h-[180px] rounded-xl border border-white/15 bg-[#0f0f0f] overflow-hidden">
-                  <Image src={PAYMENT_QR_SRC} alt="UPI payment QR code" width={180} height={180} className="object-cover" priority />
+                  <img src={PAYMENT_QR_SRC} alt="UPI payment QR code" width={180} height={180} className="object-cover" priority />
                 </div>
-                <p className="text-xs text-[#b5b5b5] mt-2">UPI: freshers2026@upi</p>
               </div>
 
               <FormField id="payment" label="Payment Screenshot" required floating={false}>
