@@ -15,7 +15,7 @@ import { EASE_PREMIUM, staggerChild, staggerParent } from '@/lib/motion'
 
 
 const PAYMENT_QR_SRC =  "/payment.png"
-const REGISTRATION_FEE = '₹1,400'
+const REGISTRATION_FEE = '₹1399/-'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_RE = /^(\+91)?[6-9]\d{9}$/
@@ -374,7 +374,7 @@ export default function RegisterPage() {
         <Reveal>
           <p className="premium-kicker">The Story</p>
           <h2 className="section-title mt-3">A Timeline of Us</h2>
-          <p className="section-subtitle mt-4">Every year wrote a chapter. Tonight, we turn the final page together.</p>
+          <p className="section-subtitle mt-4">Every year wrote a chapter. Today, we turn the final page together.</p>
         </Reveal>
 
         <div className="relative mt-10 grid gap-4 pl-8">
