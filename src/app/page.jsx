@@ -14,7 +14,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { EASE_PREMIUM, staggerChild, staggerParent } from '@/lib/motion'
 
 const PAYMENT_QR_SRC = '/payment-qr-placeholder.svg'
-const REGISTRATION_FEE = '₹200'
+const REGISTRATION_FEE = '₹1399/-'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_RE = /^(\+91)?[6-9]\d{9}$/
