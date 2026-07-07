@@ -162,7 +162,6 @@ function SiteNav({ hidden, soundEnabled, setSoundEnabled }) {
         <nav className="site-links" aria-label="Main navigation">
           <Link href="/" className={pathname === '/' ? 'active' : ''}>Register</Link>
           <Link href="/status" className={pathname === '/status' ? 'active' : ''}>Status</Link>
-          <Link href="/admin/login" className={pathname.startsWith('/admin') ? 'active' : ''}>Admin</Link>
         </nav>
 
         <button

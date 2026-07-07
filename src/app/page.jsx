@@ -27,7 +27,7 @@ const FIELDS = [
 ]
 
 const HIGHLIGHTS = [
-  { icon: Utensils, title: 'Dinner Experience', text: 'An elegant evening menu crafted for celebration and nostalgia.' },
+  { icon: Utensils, title: 'Lunch Experience', text: 'An elegant afternoon menu crafted for celebration and nostalgia.' },
   { icon: Camera, title: 'Portrait Gallery', text: 'Curated photo zones with cinematic lighting and premium frames.' },
   { icon: Crown, title: 'Awards', text: 'Honoring journeys, milestones, and unforgettable contributions.' },
   { icon: Music4, title: 'Music Curation', text: 'A soundtrack for goodbye moments and new beginnings.' },
@@ -43,7 +43,7 @@ const STORY = [
   { year: 'Epilogue', text: 'The end of one story. The beginning of another.' },
 ]
 
-const EVENT_DATE = new Date('2026-07-11T18:30:00+05:30').getTime()
+const EVENT_DATE = new Date('2026-07-11T10:00:00+05:30').getTime()
 
 function validateField(name, value) {
   switch (name) {
@@ -413,7 +413,7 @@ export default function RegisterPage() {
       <section className="section-shell py-20 reveal-section" data-reveal="countdown">
         <Reveal>
           <p className="premium-kicker">Countdown</p>
-          <h2 className="section-title mt-3">Until The Final Evening</h2>
+          <h2 className="section-title mt-3">Until The Final Celebration</h2>
         </Reveal>
         <div className="mt-9">
           <Countdown />
@@ -432,9 +432,9 @@ export default function RegisterPage() {
             <p className="mt-3 text-[#b5b5b5]">A curated ambience crafted for speeches, applause, portraits, and goodbyes.</p>
             <div className="mt-5 space-y-2 text-sm text-white/90">
               <p className="inline-flex items-center gap-2"><MapPin size={15} /> Jewel Banquets, Mehdipatnam</p>
-              <p className="inline-flex items-center gap-2"><CalendarDays size={15} /> 11 July, 2026 · 6:30 PM onwards</p>
+              <p className="inline-flex items-center gap-2"><CalendarDays size={15} /> 11 July, 2026 · 10:00 AM onwards</p>
             </div>
-            <a href="https://maps.google.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 mt-6 magnetic-btn secondary">
+            <a href="https://www.google.com/maps/search/?api=1&query=Jewel%20Banquets,%20Mehdipatnam" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 mt-6 magnetic-btn secondary">
               Directions
             </a>
           </div>
@@ -442,7 +442,7 @@ export default function RegisterPage() {
           <div className="venue-parallax overflow-hidden rounded-2xl border border-white/15 min-h-[280px]">
             <iframe
               title="Event location"
-              src="https://maps.google.com/maps?q=city%20convention%20center&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              src="https://maps.google.com/maps?q=Jewel%20Banquets,%20Mehdipatnam&t=&z=16&ie=UTF8&iwloc=&output=embed"
               className="h-full min-h-[280px] w-full"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
